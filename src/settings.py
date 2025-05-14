@@ -5,8 +5,8 @@ class BaseSettingsWithConfig(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
-class DBSettings(BaseSettingsWithConfig):
-    model_config = SettingsConfigDict(env_prefix="db_")
+class PostgresSettings(BaseSettingsWithConfig):
+    model_config = SettingsConfigDict(env_prefix="postgres_")
 
     host:   str
     port:   int
@@ -15,7 +15,7 @@ class DBSettings(BaseSettingsWithConfig):
     name:   str
 
     @property
-    def postgres_dsn(self) -> str:
+    def dsn(self) -> str:
         return f"postgresql+psycopg2://{self.user}:{self.passwd}@{self.host}:{self.port}"
 
 
@@ -29,7 +29,7 @@ class JWTSettings(BaseSettingsWithConfig):
     refresh_token_expire_days:   int = 30
 
 
-class SMTPSettings(BaseSettingsWithConfig):
+class MailSettings(BaseSettingsWithConfig):
     model_config = SettingsConfigDict(env_prefix="mail_")
 
     server: str
@@ -38,10 +38,18 @@ class SMTPSettings(BaseSettingsWithConfig):
     passwd: str
 
 
+class RedisSettings(BaseSettingsWithConfig):
+    model_config = SettingsConfigDict(env_prefix="redis_")
+
+    host: str
+    port: int
+
+
 class Settings(BaseSettingsWithConfig):
-    db: DBSettings = DBSettings()
     jwt: JWTSettings = JWTSettings()
-    smtp: SMTPSettings = SMTPSettings()
+    mail: MailSettings = MailSettings()
+    postgres: PostgresSettings = PostgresSettings()
+    redis: RedisSettings = RedisSettings()
 
 
 settings = Settings()

@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 from src.settings import settings
 
-engine = create_engine(url=settings.db.postgres_dsn)
+engine = create_engine(url=settings.postgres.dsn)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

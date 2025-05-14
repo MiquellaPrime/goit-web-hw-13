@@ -8,11 +8,11 @@ from src.services import auth as auth_service
 from src.settings import settings
 
 conf = ConnectionConfig(
-    MAIL_USERNAME=settings.smtp.user,
-    MAIL_PASSWORD=settings.smtp.passwd,
-    MAIL_FROM=settings.smtp.user,
-    MAIL_PORT=settings.smtp.port,
-    MAIL_SERVER=settings.smtp.server,
+    MAIL_USERNAME=settings.mail.user,
+    MAIL_PASSWORD=settings.mail.passwd,
+    MAIL_FROM=settings.mail.user,
+    MAIL_PORT=settings.mail.port,
+    MAIL_SERVER=settings.mail.server,
     MAIL_FROM_NAME="AddressBook App Support",
     MAIL_STARTTLS=False,
     MAIL_SSL_TLS=True,

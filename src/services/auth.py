@@ -1,9 +1,11 @@
+import pickle
 from datetime import timedelta
 from typing import Annotated
 
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError
+from redis import Redis
 from sqlalchemy.orm import Session
 from starlette import status
 from passlib.context import CryptContext
@@ -17,6 +19,7 @@ from src.config import (
 from src.settings import settings
 from src.database.db import get_db
 from src.database.models import UserORM
+from src.database.redis import get_redis
 from src.repository import users as user_repository
 from src.utils import auth as auth_utils
 
@@ -90,6 +93,7 @@ async def authenticate_user(db: Session, email: str, password: str) -> UserORM |
 async def get_current_user(
         token: Annotated[str, Depends(oauth2_scheme)],
         db: Annotated[Session, Depends(get_db)],
+        r: Annotated[Redis, Depends(get_redis)],
 ):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -107,7 +111,13 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    user_model = await user_repository.get_user_by_email(db, email)
-    if user_model is None:
-        raise credentials_exception
+    cached_user_model = r.get(f"user:{email}")
+    if cached_user_model is None:
+        user_model = await user_repository.get_user_by_email(db, email)
+        if user_model is None:
+            raise credentials_exception
+        r.set(f"user:{email}", pickle.dumps(user_model))
+        r.expire(f"user:{email}", 900)
+    else:
+        user_model = pickle.loads(cached_user_model)
     return user_model
