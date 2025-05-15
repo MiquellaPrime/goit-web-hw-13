@@ -47,3 +47,15 @@ async def confirmed_email(
     user_model = await get_user_by_email(db, email)
     user_model.confirmed = True
     db.commit()
+
+
+async def update_avatar(
+        db: Session,
+        email: str,
+        url: str,
+) -> UserORM:
+    user_model = await get_user_by_email(db, email)
+    user_model.avatar = url
+    db.commit()
+    db.refresh(user_model)
+    return user_model

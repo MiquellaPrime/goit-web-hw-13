@@ -13,6 +13,7 @@ class UserSchema(UserBaseSchema):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    avatar: str | None = None
     created_at: datetime | None = None
 
 

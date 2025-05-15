@@ -14,10 +14,10 @@ from fastapi.security import (
 )
 from starlette import status
 
-from src.dependency import db_dependency, user_dependency
+from src.dependency import db_dependency
 from src.repository import users as user_repository
 from src.schemas.auth import TokenSchema, RequestEmailSchema
-from src.schemas.users import UserSchema, UserCreateSchema
+from src.schemas.users import UserCreateSchema
 from src.services import auth as auth_service
 from src.services import email as email_service
 
@@ -133,8 +133,3 @@ async def confirmed_email(
 
     await user_repository.confirmed_email(db, email)
     return {"message": "Email confirmed."}
-
-
-@router.get("/users/me", response_model=UserSchema)
-async def read_users_me(current_user: user_dependency):
-    return current_user

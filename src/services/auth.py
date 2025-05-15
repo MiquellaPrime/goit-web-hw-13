@@ -111,13 +111,13 @@ async def get_current_user(
     except JWTError:
         raise credentials_exception
 
-    cached_user_model = r.get(f"user:{email}")
+    cached_user_model = await r.get(f"user:{email}")
     if cached_user_model is None:
         user_model = await user_repository.get_user_by_email(db, email)
         if user_model is None:
             raise credentials_exception
-        r.set(f"user:{email}", pickle.dumps(user_model))
-        r.expire(f"user:{email}", 900)
+        await r.set(f"user:{email}", pickle.dumps(user_model))
+        await r.expire(f"user:{email}", 900)
     else:
         user_model = pickle.loads(cached_user_model)
     return user_model

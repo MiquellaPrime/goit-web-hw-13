@@ -14,6 +14,7 @@ class UserORM(Base):
     hashed_password = Column(String, nullable=False)
     first_name      = Column(String(15), nullable=False)
     last_name       = Column(String(15))
+    avatar          = Column(String(255), nullable=True)
     created_at      = Column(DateTime(timezone=True), default=current_time)
     confirmed       = Column(Boolean, default=False)
     refresh_token   = Column(String, nullable=True)
