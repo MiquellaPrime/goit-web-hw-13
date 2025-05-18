@@ -15,6 +15,18 @@ async def get_contacts(
         user_id: int,
         fp: FilterParams
 ) -> list[ContactORM]:
+    """
+    Retrieves a list of contacts for a specific user with optional filtering.
+
+    :param db: The database session.
+    :type db: Session
+    :param user_id: The ID of the user whose contacts to retrieve.
+    :type user_id: int
+    :param fp: Optional filter parameters to narrow down results.
+    :type fp: FilterParams
+    :return: A list of contact objects.
+    :rtype: list[ContactORM]
+    """
     stmt = select(ContactORM).filter_by(user_id=user_id)
 
     if fp.first_name:
@@ -34,6 +46,18 @@ async def get_contact_by_id(
         user_id: int,
         contact_id: int
 ) -> ContactORM | None:
+    """
+    Retrieves a specific contact by its ID for a given user.
+
+    :param db: The database session.
+    :type db: Session
+    :param user_id: The ID of the user who owns the contact.
+    :type user_id: int
+    :param contact_id: The ID of the contact to retrieve.
+    :type contact_id: int
+    :return: The contact object if found, otherwise None.
+    :rtype: ContactORM | None
+    """
     stmt = select(ContactORM).filter_by(id=contact_id, user_id=user_id)
     return db.execute(stmt).first()
 
@@ -43,6 +67,18 @@ async def get_upcoming_birthdays(
         user_id: int,
         date_list: list[str]
 ) -> list[ContactORM]:
+    """
+    Retrieves contacts whose birthdays fall on the upcoming dates.
+
+    :param db: The database session.
+    :type db: Session
+    :param user_id: The ID of the user to search contacts for.
+    :type user_id: int
+    :param date_list: List of date strings (formatted as MM-DD) to match birthdays against.
+    :type date_list: list[str]
+    :return: A list of matching contact objects.
+    :rtype: list[ContactORM]
+    """
     stmt = select(ContactORM).where(
         ContactORM.user_id == user_id,
         func.to_char(ContactORM.birth_date, "MM-DD").in_(date_list)
@@ -55,6 +91,17 @@ async def create_contact(
         user_id: int,
         body: ContactCreateSchema
 ):
+    """
+    Creates a new contact for a specific user.
+
+    :param db: The database session.
+    :type db: Session
+    :param user_id: The ID of the user creating the contact.
+    :type user_id: int
+    :param body: The contact data to create.
+    :type body: ContactCreateSchema
+    :return: None
+    """
     contact_model = ContactORM(
         first_name=body.first_name,
         last_name=body.last_name,
@@ -74,6 +121,20 @@ async def update_contact(
         contact_id: int,
         body: ContactUpdateSchema
 ) -> ContactORM | None:
+    """
+    Updates an existing contact's details.
+
+    :param db: The database session.
+    :type db: Session
+    :param user_id: The ID of the user who owns the contact.
+    :type user_id: int
+    :param contact_id: The ID of the contact to update.
+    :type contact_id: int
+    :param body: The updated contact data.
+    :type body: ContactUpdateSchema
+    :return: The updated contact object, or None if not found.
+    :rtype: ContactORM | None
+    """
     stmt = select(ContactORM).filter_by(id=contact_id, user_id=user_id)
     contact_model = db.execute(stmt).scalar()
 
@@ -95,6 +156,20 @@ async def update_birth_date(
         contact_id: int,
         body: ContactBirthDateUpdateSchema
 ) -> ContactORM | None:
+    """
+    Updates the birth date of a specific contact.
+
+    :param db: The database session.
+    :type db: Session
+    :param user_id: The ID of the user who owns the contact.
+    :type user_id: int
+    :param contact_id: The ID of the contact to update.
+    :type contact_id: int
+    :param body: The updated birth date.
+    :type body: ContactBirthDateUpdateSchema
+    :return: The updated contact object, or None if not found.
+    :rtype: ContactORM | None
+    """
     stmt = select(ContactORM).filter_by(id=contact_id, user_id=user_id)
     contact_model = db.execute(stmt).scalar()
 
@@ -110,6 +185,18 @@ async def delete_contact(
         user_id: int,
         contact_id: int
 ) -> ContactORM | None:
+    """
+    Deletes a specific contact by ID for a given user.
+
+    :param db: The database session.
+    :type db: Session
+    :param user_id: The ID of the user who owns the contact.
+    :type user_id: int
+    :param contact_id: The ID of the contact to delete.
+    :type contact_id: int
+    :return: The deleted contact object, or None if not found.
+    :rtype: ContactORM | None
+    """
     stmt = select(ContactORM).filter_by(id=contact_id, user_id=user_id)
     contact_model = db.execute(stmt).scalar()
 

@@ -23,6 +23,16 @@ conf = ConnectionConfig(
 
 
 async def send_email(user_model: UserORM, host: str):
+    """
+    Sends a verification email to a user with a confirmation link.
+
+    :param user_model: The user to whom the email should be sent.
+    :type user_model: UserORM
+    :param host: The host domain used to construct the verification URL.
+    :type host: str
+    :return: None
+    :raises ConnectionErrors: If email could not be sent due to connection issues.
+    """
     try:
         verification_token = auth_service.create_verify_token(user_model)
         message = MessageSchema(
